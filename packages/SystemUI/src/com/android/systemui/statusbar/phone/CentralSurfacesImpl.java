@@ -234,6 +234,7 @@ import com.android.systemui.statusbar.policy.ConfigurationController.Configurati
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController.DeviceProvisionedListener;
 import com.android.systemui.statusbar.policy.ExtensionController;
+import com.android.systemui.statusbar.policy.GameSpaceManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserInfoControllerImpl;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
@@ -514,6 +515,8 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
     /** Controller for the Shade. */
     @VisibleForTesting
     NotificationPanelViewController mNotificationPanelViewController;
+
+    protected GameSpaceManager mGameSpaceManager;
 
     // settings
     private QSPanelController mQSPanelController;
@@ -880,6 +883,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
 
         mActivityIntentHelper = new ActivityIntentHelper(mContext);
         mActivityLaunchAnimator = activityLaunchAnimator;
+        mGameSpaceManager = new GameSpaceManager(mContext, mKeyguardStateController);
 
         // The status bar background may need updating when the ongoing call status changes.
         mOngoingCallController.addCallback((animate) -> maybeUpdateBarMode());
@@ -1507,6 +1511,7 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_CAMERA_GESTURE);
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver, filter, null, UserHandle.ALL);
+        mGameSpaceManager.observe();
     }
 
     protected QS createDefaultQSFragment() {
@@ -4202,6 +4207,10 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces, Tune
         } else if (DISPLAY_CUTOUT_HIDDEN.equals(key)) {
             updateCutoutOverlay(TunerService.parseIntegerSwitch(newValue, false));
         }
+    }
+
+    public GameSpaceManager getGameSpaceManager() {
+        return mGameSpaceManager;
     }
 
     // End Extra BaseStatusBarMethods.
