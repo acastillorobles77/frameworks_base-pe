@@ -549,7 +549,7 @@ class StatusBarNotificationActivityStarter implements NotificationActivityStarte
 
     @VisibleForTesting
     void launchFullScreenIntent(NotificationEntry entry) {
-        GameSpaceManager gameSpace = mStatusBar.getGameSpaceManager();
+        GameSpaceManager gameSpace = mCentralSurfaces.getGameSpaceManager();
         if (gameSpace != null && gameSpace.shouldSuppressFullScreenIntent()) {
             return;
         }
@@ -569,6 +569,7 @@ class StatusBarNotificationActivityStarter implements NotificationActivityStarte
                 mDreamManager.awaken();
             } catch (RemoteException e) {
                 e.printStackTrace();
+            }
         });
 
         // not immersive & a fullscreen alert should be shown
